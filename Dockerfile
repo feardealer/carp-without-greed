@@ -2,8 +2,6 @@ FROM ubuntu:latest
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-CMD ["unshare", "--pid", "--fork", "--mount-proc", "/lib/systemd/systemd"]
-
 RUN apt update && apt install -y \
     libxcomposite-dev \
     libcups2-dev \
@@ -18,11 +16,10 @@ RUN apt update && apt install -y \
     libxkbcommon-dev \
     libxrandr-dev \
     libnss3 \
-    wget \
     p7zip-full \
     expect
 
-RUN wget https://ponies.cloud/scanner_web/acunetix/Acunetix-v23.9.23-Linux-Pwn3rzs-CyberArsenal.7z
+ADD https://ponies.cloud/scanner_web/acunetix/Acunetix-v23.9.23-Linux-Pwn3rzs-CyberArsenal.7z .
 
 RUN 7z x Acunetix-v23.9.23-Linux-Pwn3rzs-CyberArsenal.7z -pPwn3rzs
 
@@ -42,20 +39,22 @@ RUN expect script.exp
 
 CMD systemctl stop acunetix
 
-COPY wvsc /home/acunetix/.acunetix/v_230906116/scanner/wvsc
+CMD cp wvsc /home/acunetix/.acunetix/v_231005181/scanner/
 
-RUN chown acunetix:acunetix /home/acunetix/.acunetix/v_230906116/scanner/wvsc
-RUN chmod +x /home/acunetix/.acunetix/v_230906116/scanner/wvsc
+CMD chown acunetix:acunetix /home/acunetix/.acunetix/v_231005181/scanner/wvsc
+CMD chmod +x /home/acunetix/.acunetix/v_231005181/scanner/wvsc
+
+CMD ls /home/acunetix
 
 CMD rm /home/acunetix/.acunetix/data/license/*
 
-COPY license_info.json /home/acunetix/.acunetix/data/license/
-COPY wa_data.dat /home/acunetix/.acunetix/data/license/
+CMD cp license_info.json /home/acunetix/.acunetix/data/license/
+CMD cp wa_data.dat /home/acunetix/.acunetix/data/license/
 
-RUN chown acunetix:acunetix /home/acunetix/.acunetix/data/license/license_info.json
-RUN chown acunetix:acunetix /home/acunetix/.acunetix/data/license/wa_data.dat
-RUN chmod 444 /home/acunetix/.acunetix/data/license/license_info.json
-RUN chmod 444 /home/acunetix/.acunetix/data/license/wa_data.dat
+CMD chown acunetix:acunetix /home/acunetix/.acunetix/data/license/license_info.json
+CMD chown acunetix:acunetix /home/acunetix/.acunetix/data/license/wa_data.dat
+CMD chmod 444 /home/acunetix/.acunetix/data/license/license_info.json
+CMD chmod 444 /home/acunetix/.acunetix/data/license/wa_data.dat
 CMD chattr +i /home/acunetix/.acunetix/data/license/license_info.json
 
 CMD systemctl start acunetix
